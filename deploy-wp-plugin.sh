@@ -86,15 +86,16 @@ GIT_ROOT=$(pwd)
 SVN_ROOT="${HOME}/svn"
 mkdir "$SVN_ROOT"
 cd "$SVN_ROOT"
+if [[ -e ".svnignore" ]]; then
+    svn propset -R svn:ignore -F .svnignore .
+fi
 svn co "$SVN_REF"
 
 echo 'Updating svn repo..'
 rm -rf trunk/*
 cp "${GIT_ROOT}/*" trunk/
-if [[ -e ".svnignore" ]]; then
-    svn propset -R svn:ignore -F .svnignore .
-fi
-cp trunk "tags/${TRAVIS_TAG}"
+cp "${GIT_ROOT}/*" "tags/${TRAVIS_TAG}/"
+
 svn add ./*
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username "$SVN_USER" --password "$SVN_PASS"  > /dev/null 2>&1
