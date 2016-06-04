@@ -84,6 +84,7 @@ fi
 echo 'preparing svn repo..'
 GIT_ROOT=$(pwd)
 SVN_ROOT="${HOME}/svn"
+SVN_REPO=$(basename "$SVN_REF")
 mkdir "$SVN_ROOT"
 cd "$SVN_ROOT"
 if [[ -e ".svnignore" ]]; then
@@ -93,8 +94,8 @@ svn co "$SVN_REF"
 
 echo 'Updating svn repo..'
 rm -rf trunk/*
-cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/trunk"
-cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/tags/${TRAVIS_TAG}"
+cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/${SVN_REPO}/trunk"
+cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/${SVN_REPO}/tags/${TRAVIS_TAG}"
 
 svn add ./*
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
