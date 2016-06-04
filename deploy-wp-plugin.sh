@@ -72,12 +72,12 @@ echo "Pushing new tag '$TRAVIS_TAG'..."
 git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 
-if [[ "" != $SVN_USER || "" !=$SVN_PASS ]]; then
+if ! [[ "" == "$SVN_USER" && "" == "$SVN_PASS" ]]; then
     echo 'not committing to svn.'
     exit 0
 fi
 
-if [[ "-d tags/${TRAVIS_TAG}" ]]; then
+if [[ -d "tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
     exit 0
 fi
@@ -85,19 +85,19 @@ fi
 #svn release
 echo 'preparing svn repo..'
 GIT_ROOT=$(pwd)
-SVN_ROOT="~/svn"
+SVN_ROOT="${HOME}/svn"
 mkdir "$SVN_ROOT"
 cd "$SVN_ROOT"
 svn co "$SVN_REF"
 
 echo 'Updating svn repo..'
 rm -rf trunk/*
-cp "${GIT_REPO}/*" trunk/
+cp "${GIT_ROOT}/*" trunk/
 if [[ -e ".svnignore" ]]; then
     svn propset -R svn:ignore -F .svnignore .
 fi
 svn cp trunk "tags/${TRAVIS_TAG}"
-svn add *
+svn add trunk/*
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username "$SVN_USER" --password "$SVN_PASS"  > /dev/null 2>&1
 
