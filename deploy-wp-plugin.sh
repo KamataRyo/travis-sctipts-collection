@@ -82,10 +82,7 @@ fi
 
 #svn release
 echo 'preparing svn repo..'
-if [[ -e ".svnignore" ]]; then
-    echo 'setting svn ignore up..'
-    svn propset -R svn:ignore -F .svnignore .
-fi
+
 GIT_ROOT=$(pwd)
 WORKING_DIR="${HOME}/svn"
 mkdir "$WORKING_DIR"
@@ -93,6 +90,10 @@ SVN_REPO=$(basename "$SVN_REF")
 SVN_ROOT="${WORKING_DIR}/${SVN_REPO}"
 cd "$SVN_ROOT"
 svn co "$SVN_REF"
+if [[ -e ".svnignore" ]]; then
+    echo 'setting svn ignore up..'
+    svn propset -R svn:ignore -F "${GIT_ROOT}/.svnignore" "${SVN_ROOT}"
+fi
 
 echo 'Updating svn repo..'
 rm -rf trunk/*
