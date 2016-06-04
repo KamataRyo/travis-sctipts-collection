@@ -72,7 +72,7 @@ echo "Pushing new tag '$TRAVIS_TAG'..."
 git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 
-if ! [[ "" == "$SVN_USER" && "" == "$SVN_PASS" ]]; then
+if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
     echo 'not committing to svn.'
     exit 0
 fi
