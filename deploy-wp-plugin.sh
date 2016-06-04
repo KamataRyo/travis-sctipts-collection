@@ -52,8 +52,6 @@ git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMI
 # github release on 'latest' branch
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
     echo "enforcing pushing to 'latest'.."
-    echo "$GH_REF" # test
-    echo "$SVN_USER" # test
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
     echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 fi
@@ -96,8 +94,8 @@ cp "${GIT_ROOT}/*" trunk/
 if [[ -e ".svnignore" ]]; then
     svn propset -R svn:ignore -F .svnignore .
 fi
-svn cp trunk "tags/${TRAVIS_TAG}"
-svn add trunk/*
+cp trunk "tags/${TRAVIS_TAG}"
+svn add ./*
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username "$SVN_USER" --password "$SVN_PASS"  > /dev/null 2>&1
 
