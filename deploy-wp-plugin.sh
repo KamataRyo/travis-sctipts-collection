@@ -93,8 +93,8 @@ svn co "$SVN_REF"
 
 echo 'Updating svn repo..'
 rm -rf trunk/*
-cp "${GIT_ROOT}" ./trunk/
-cp "${GIT_ROOT}" "./tags/${TRAVIS_TAG}/"
+cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/trunk"
+cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/tags/${TRAVIS_TAG}"
 
 svn add ./*
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
