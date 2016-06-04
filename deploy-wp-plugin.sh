@@ -83,6 +83,7 @@ fi
 #svn release
 echo 'preparing svn repo..'
 if [[ -e ".svnignore" ]]; then
+    echo 'setting svn ignore up..'
     svn propset -R svn:ignore -F .svnignore .
 fi
 GIT_ROOT=$(pwd)
