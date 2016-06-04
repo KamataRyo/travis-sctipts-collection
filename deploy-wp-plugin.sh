@@ -59,7 +59,7 @@ if [[ "master" == "$TRAVIS_BRANCH" ]]; then
 fi
 
 if [[  "" == "$TRAVIS_TAG" ]]; then
-    echo "Not deploying without tag."
+    echo "Not releasing without tag."
     exit 0
 fi
 
