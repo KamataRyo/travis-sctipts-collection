@@ -85,11 +85,11 @@ echo 'preparing svn repo..'
 
 GIT_ROOT=$(pwd)
 WORKING_DIR="${HOME}/svn"
-mkdir "$WORKING_DIR"
+mkdir "${WORKING_DIR}"
 SVN_REPO=$(basename "$SVN_REF")
 SVN_ROOT="${WORKING_DIR}/${SVN_REPO}"
-cd "$SVN_ROOT"
-svn co "$SVN_REF"
+cd "${WORKING_DIR}"
+svn co "${SVN_REF}"
 if [[ -e ".svnignore" ]]; then
     echo 'setting svn ignore up..'
     svn propset -R svn:ignore -F "${GIT_ROOT}/.svnignore" "${SVN_ROOT}"
