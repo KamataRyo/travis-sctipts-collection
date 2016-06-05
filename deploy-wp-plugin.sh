@@ -95,6 +95,8 @@ cp -r "$TEMP_DIR/"* "$SVN_ROOT"/trunk/
 mkdir "$SVN_ROOT"/tags/"$TRAVIS_TAG"
 cp -r "$TEMP_DIR/"* "$SVN_ROOT"/tags/"$TRAVIS_TAG"
 
+ls "${SVN_ROOT}/trunk/"
+
 if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
     echo "Setting ignore files.."
     svn propset -R svn:ignore -F "${SVN_ROOT}/trunk/.svnignore" "${SVN_ROOT}"
@@ -102,10 +104,16 @@ fi
 
 echo "Commiting to svn.."
 cd "${SVN_ROOT}"
+echo "Run svn add"
+
+svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
+echo "Run svn del"
+svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
+
 ls -la "${SVN_ROOT}"
 svn stat
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
---username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache
+--username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache 2 >
 echo "svn commiting finished."
 
 exit 0
