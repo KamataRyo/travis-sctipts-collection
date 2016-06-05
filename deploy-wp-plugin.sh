@@ -78,9 +78,8 @@ fi
 #svn release
 echo "preparing svn repo.."
 
-GIT_ROOT=$(pwd)
 TEMP_DIR=$(mktemp -d)
-mv * "${TEMP_DIR}/"
+mv ./* "${TEMP_DIR}/"
 
 svn co "${SVN_REF}"
 SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
@@ -91,9 +90,10 @@ if [[ -d "tags/${TRAVIS_TAG}" ]]; then
 fi
 
 echo "Updating svn repo.."
-rm -rf "${SVN_ROOT}/trunk/*"
-cp -Rf "${TEMP_DIR}/*" "${SVN_ROOT}/trunk/"
-cp -Rf "${TEMP_DIR}/*" "${SVN_ROOT}/tags/${TRAVIS_TAG}"
+rm -rf "$SVN_ROOT"/trunk/*
+ls "$TEMP_DIR"
+cp -r "$TEMP_DIR/"* "$SVN_ROOT"/trunk/
+cp -r "$TEMP_DIR/"* "$SVN_ROOT"/tags/"$TRAVIS_TAG"
 
 echo "Setting ignore files.."
 if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
