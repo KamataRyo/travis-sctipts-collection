@@ -91,13 +91,12 @@ fi
 
 echo "Updating svn repo.."
 rm -rf "$SVN_ROOT"/trunk/*
-ls "$TEMP_DIR"
 cp -r "$TEMP_DIR/"* "$SVN_ROOT"/trunk/
+mkdir "$SVN_ROOT"/tags/"$TRAVIS_TAG"
 cp -r "$TEMP_DIR/"* "$SVN_ROOT"/tags/"$TRAVIS_TAG"
 
-echo "Setting ignore files.."
 if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
-    echo "setting svn ignore up.."
+    echo "Setting ignore files.."
     svn propset -R svn:ignore -F "${SVN_ROOT}/trunk/.svnignore" "${SVN_ROOT}"
 fi
 
