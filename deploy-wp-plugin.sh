@@ -86,39 +86,26 @@ if [[ -e "./.svnignore" ]]; then
         fi
     done <.svnignore
 fi
+RELEASE_DIR=$(pwd)
 
-TEMP_DIR=$(mktemp -d)
-mv ./* "${TEMP_DIR}/"
+cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
+ls ./trunk | grep -v -E "^.svn$" | xargs rm -r
+ls ./assets | grep -v -E "^.svn$" | xargs rm -r
+mv "$RELEASE_DIR" ./trunk
+mv "$(find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
+mv "$(find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
 
-SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
-echo "Syncing git repository to svn.."
-cd "${SVN_ROOT}/trunk"
-
-pwd
-ls -la
-
-svn rm --quiet ./*
-svn rm --quiet ../assets/*
-rm -r ./*
-rm -r ../assets/*
-mv "${TEMP_DIR}"/* ./
-mv `find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg]."` ../assets
-mv `find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]."` ../assets
-svn add --quiet ./*
-svn add --quiet ../assets
-
-if [[ -e "../tags/${TRAVIS_TAG}" ]]; then
+if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
 else
     echo 'making tag..'
-    cp . "../tags/${TRAVIS_TAG}"
-    svn add --quiet ../tags
+    cp ./trunk "./tags/${TRAVIS_TAG}"
 fi
 
 echo 'svn committing..'
-svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username $SVN_USER --password $SVN_PASS --non-interactive > /dev/null 2>&1
+svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
 echo "svn commiting finished."
 
 exit 0
