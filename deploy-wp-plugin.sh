@@ -94,7 +94,7 @@ cd "$(basename $SVN_REF)"
 
 cd trunk
 ls . | grep -v -E "^.svn$" | xargs rm -r
-cd assets
+cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
