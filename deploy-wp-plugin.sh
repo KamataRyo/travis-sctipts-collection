@@ -92,16 +92,23 @@ cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
+
+echo 'removing old files..'
 cd trunk
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
-mv "$RELEASE_DIR" ./trunk
+ls -la
+
+mv -r "$RELEASE_DIR"/* ./trunk
+
+ls -la ./trunk
 mv "$(find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
 mv "$(find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
 
+ls -la
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
