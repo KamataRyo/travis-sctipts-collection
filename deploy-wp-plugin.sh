@@ -96,6 +96,9 @@ SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 echo "Syncing git repository to svn.."
 cd "${SVN_ROOT}/trunk"
 
+pwd
+ls -la
+
 svn rm --quiet ./*
 svn rm --quiet ../assets/*
 rm -r ./*
