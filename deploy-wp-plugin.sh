@@ -103,9 +103,9 @@ fi
 cd "${SVN_ROOT}"
 
 echo "Run svn add"
-svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
+svn st | grep '^!' | sed -e 's/\![ ]*/svn del /g' | sh
 echo "Run svn del"
-svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
+svn st | grep '^?' | sed -e 's/\?[ ]*/svn add /g' | sh
 
 
 svn cp -q trunk "tags/${TRAVIS_TAG}"
