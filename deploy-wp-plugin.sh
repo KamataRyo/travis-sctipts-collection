@@ -4,16 +4,17 @@
 # [description] Deploy a WordPress Plugin to Github and svn Plugin from Travis CI
 
 # [Environmental Variables]
-# - $WP_VERSION_TO_DEPLOY
-# - $PHP_VERSION_TO_DEPLOY
-# - $WP_MULTISITE_TO_DEPLOY
-# - $GH_REF
-# - $SVN_REF
-# - $GH_TOKEN
-# - $SVN_USER
-# - $SVN_PASS
+# WP_VERSION_TO_DEPLOY
+# PHP_VERSION_TO_DEPLOY
+# WP_MULTISITE_TO_DEPLOY
+# GH_REF
+# SVN_REF
+# GH_TOKEN
+# SVN_USER
+# SVN_PASS
 
 set -e
+shopt -s dotglob
 
 # filter whether deploy or not
 if ! [[ "$WP_VERSION"         == "$WP_VERSION_TO_DEPLOY" && \
@@ -62,8 +63,6 @@ if [[  "" == "$TRAVIS_TAG" ]]; then
 fi
 
 # github tagged release.
-echo "Deleting remote not compiled tag '$TRAVIS_TAG'.."
-git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" ":$TRAVIS_TAG" > /dev/null 2>&1
 echo "Making new tag with compiled files..."
 git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
 echo "Pushing new tag '$TRAVIS_TAG'..."
@@ -78,39 +77,42 @@ fi
 #svn release
 echo "preparing svn repo.."
 
+if [[ -e "./.svnignore" ]]; then
+    while read line
+    do
+        if [[ -e $line ]]; then
+            rm -r "$line"
+        fi
+    done <.svnignore
+fi
+
 TEMP_DIR=$(mktemp -d)
 mv ./* "${TEMP_DIR}/"
-
-svn co "${SVN_REF}"
-
-if [[ -d "tags/${TRAVIS_TAG}" ]]; then
-    echo "'tags/${TRAVIS_TAG}' already exists."
-    exit 0
-fi
+svn co --quiet "${SVN_REF}"
 
 SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
 echo "Syncing git repository to svn.."
-rsync -avq --exclude=".svn" --checksum --delete "${TEMP_DIR}/" "${SVN_ROOT}/trunk/"
-
 cd "${SVN_ROOT}/trunk"
 
-if [[ -e ".svnignore" ]]; then
-    echo "doing svn propset and setting ignore files.."
-    svn propset -R svn:ignore -F .svnignore .
+svn rm --quiet ./*
+mv "${TEMP_DIR}"/* ./
+
+mv `find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg]."` ../assets
+mv `find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]."` ../assets
+svn add --quiet ./*
+svn add --quiet ../assets
+
+if [[ -e "../tags/${TRAVIS_TAG}" ]]; then
+    echo "'tags/${TRAVIS_TAG}' already exists."
+else
+    echo 'making tag..'
+    cp . "../tags/${TRAVIS_TAG}"
+    svn add --quiet ../tags
 fi
 
-cd "${SVN_ROOT}"
-
-echo "Run svn add"
-svn st | grep '^!' | sed -e 's/\![ ]*/svn del /g' | sh
-echo "Run svn del"
-svn st | grep '^?' | sed -e 's/\?[ ]*/svn add /g' | sh
-
-
-svn cp -q trunk "tags/${TRAVIS_TAG}"
-svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
---username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache 2>/dev/null
+echo 'svn committing..'
+svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username $SVN_USER --password $SVN_PASS --non-interactive > /dev/null 2>&1
 echo "svn commiting finished."
 
 exit 0
