@@ -80,7 +80,6 @@ echo "preparing svn repo.."
 
 GIT_ROOT=$(pwd)
 TEMP_DIR=$(mktemp -d)
-ls -R # for test
 mv * "${TEMP_DIR}/"
 
 svn co "${SVN_REF}"
