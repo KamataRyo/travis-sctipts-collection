@@ -102,8 +102,8 @@ fi
 
 echo "Commiting to svn.."
 cd "${SVN_ROOT}"
+ls -la "${SVN_ROOT}"
 svn stat
-echo $SVN_USER #test
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache
 echo "svn commiting finished."
