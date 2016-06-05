@@ -71,36 +71,38 @@ git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
 echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 
 if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
-    echo 'not committing to svn.'
+    echo "not committing to svn."
     exit 0
 fi
+
+#svn release
+echo "preparing svn repo.."
+
+GIT_ROOT=$(pwd)
+TEMP_DIR=$(mktemp -d)
+mv "${GIT_ROOT}/*" "${TEMP_DIR}/"
+
+svn co "${SVN_REF}"
+SVN_ROOT="${SVN_ROOT}/$(basename "$SVN_REF")"
 
 if [[ -d "tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
     exit 0
 fi
 
-#svn release
-echo 'preparing svn repo..'
+echo "Updating svn repo.."
+rm -rf "${SVN_ROOT}/trunk/*"
+cp -Rf "${TEMP_DIR}/*" "${SVN_ROOT}/trunk/"
+cp -Rf "${TEMP_DIR}/*" "${SVN_ROOT}/tags/${TRAVIS_TAG}"
 
-GIT_ROOT=$(pwd)
-WORKING_DIR="${HOME}/svn"
-mkdir "${WORKING_DIR}"
-SVN_REPO=$(basename "$SVN_REF")
-SVN_ROOT="${WORKING_DIR}/${SVN_REPO}"
-cd "${WORKING_DIR}"
-svn co "${SVN_REF}"
-if [[ -e ".svnignore" ]]; then
-    echo 'setting svn ignore up..'
-    svn propset -R svn:ignore -F "${GIT_ROOT}/.svnignore" "${SVN_ROOT}"
+echo "Setting ignore files.."
+if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
+    echo "setting svn ignore up.."
+    svn propset -R svn:ignore -F "${SVN_ROOT}/trunk/.svnignore" "${SVN_ROOT}"
 fi
 
-echo 'Updating svn repo..'
-rm -rf trunk/*
-cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/trunk"
-cp -Rf "${GIT_ROOT}" "${SVN_ROOT}/tags/${TRAVIS_TAG}"
-
-svn add ./*
+echo "Commiting to svn.."
+svn add "${SVN_ROOT}/trunk/*"
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username "$SVN_USER" --password "$SVN_PASS"  > /dev/null 2>&1
 
