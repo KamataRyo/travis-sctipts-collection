@@ -102,9 +102,12 @@ fi
 
 cd "${SVN_ROOT}"
 
+echo "Run svn add"
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 echo "Run svn del"
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
+
+svn st
 
 svn cp -q trunk "tags/${TRAVIS_TAG}"
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
