@@ -103,13 +103,9 @@ cd ..
 mv "$RELEASE_DIR"/* ./trunk
 
 cd ./trunk
-echo 1
-find . -type f | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]."
-mv "$(find . -type f | grep -e "screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
-echo 2
-mv "$(find . -type f | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
-echo 3
-ls -la
+mv "$(find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
+mv "$(find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
+cd ..
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
