@@ -101,7 +101,7 @@ if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
 fi
 
 echo "Commiting to svn.."
-ls -R "${SVN_ROOT}"
+ls "${SVN_ROOT}"
 svn add "${SVN_ROOT}"
 svn ci -q -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
 --username "$SVN_USER" --password "$SVN_PASS"  > /dev/null 2>&1
