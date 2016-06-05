@@ -74,6 +74,7 @@ if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
     exit 0
 fi
 
+
 #svn release
 echo "preparing svn repo.."
 
@@ -96,6 +97,7 @@ echo "Syncing git repository to svn.."
 cd "${SVN_ROOT}/trunk"
 
 svn rm --quiet ./*
+svn rm --quiet ../assets/*
 mv "${TEMP_DIR}"/* ./
 
 mv `find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg]."` ../assets
