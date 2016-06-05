@@ -98,8 +98,9 @@ cd "${SVN_ROOT}/trunk"
 
 svn rm --quiet ./*
 svn rm --quiet ../assets/*
+rm -r ./*
+rm -r ../assets/*
 mv "${TEMP_DIR}"/* ./
-
 mv `find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg]."` ../assets
 mv `find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]."` ../assets
 svn add --quiet ./*
