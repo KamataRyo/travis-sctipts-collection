@@ -91,7 +91,7 @@ fi
 SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
 echo "Syncing git repository to svn.."
-rsync -av --exclude=".svn" --checksum --delete "${TEMP_DIR}/" "${SVN_ROOT}/trunk/"
+rsync -avq --exclude=".svn" --checksum --delete "${TEMP_DIR}/" "${SVN_ROOT}/trunk/"
 
 cd "${SVN_ROOT}/trunk"
 
