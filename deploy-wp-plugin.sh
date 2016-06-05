@@ -93,9 +93,9 @@ svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
 cd trunk
-ls ./trunk | grep -v -E "^.svn$" | xargs rm -r
+ls . | grep -v -E "^.svn$" | xargs rm -r
 cd assets
-ls ./assets | grep -v -E "^.svn$" | xargs rm -r
+ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
 mv "$RELEASE_DIR" ./trunk
