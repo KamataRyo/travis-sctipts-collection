@@ -81,10 +81,10 @@ echo "preparing svn repo.."
 GIT_ROOT=$(pwd)
 TEMP_DIR=$(mktemp -d)
 ls -R # for test
-mv "${GIT_ROOT}/*" "${TEMP_DIR}/"
+mv * "${TEMP_DIR}/"
 
 svn co "${SVN_REF}"
-SVN_ROOT="${SVN_ROOT}/$(basename "$SVN_REF")"
+SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
 if [[ -d "tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
