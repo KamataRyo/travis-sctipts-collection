@@ -100,11 +100,9 @@ cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
-ls -la
-
 mv "$RELEASE_DIR"/* ./trunk
 
-ls -la ./trunk
+cd ./trunk
 mv "$(find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
 mv "$(find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
 
