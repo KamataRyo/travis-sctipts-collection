@@ -78,9 +78,6 @@ fi
 #svn release
 echo "preparing svn repo.."
 
-echo "test:"
-ls -la
-
 if [[ -e "./.svnignore" ]]; then
     while read line
     do
@@ -93,9 +90,7 @@ RELEASE_DIR=$(pwd)
 
 cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
-
-echo "test:"
-ls -la
+cd "$(basename $SVN_REF)"
 
 ls ./trunk | grep -v -E "^.svn$" | xargs rm -r
 ls ./assets | grep -v -E "^.svn$" | xargs rm -r
