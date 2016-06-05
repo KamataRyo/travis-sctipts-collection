@@ -82,38 +82,33 @@ TEMP_DIR=$(mktemp -d)
 mv ./* "${TEMP_DIR}/"
 
 svn co "${SVN_REF}"
-SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
 if [[ -d "tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
     exit 0
 fi
 
-echo "Updating svn repo.."
-rm -rf "$SVN_ROOT"/trunk/*
-cp -r "$TEMP_DIR/"* "$SVN_ROOT"/trunk/
-mkdir "$SVN_ROOT"/tags/"$TRAVIS_TAG"
-cp -r "$TEMP_DIR/"* "$SVN_ROOT"/tags/"$TRAVIS_TAG"
+SVN_ROOT="$(pwd)/$(basename "$SVN_REF")"
 
-ls "${SVN_ROOT}/trunk/"
+echo "Syncing git repository to svn.."
+rsync -av --exclude=".svn" --checksum --delete "${TEMP_DIR}/" "${SVN_ROOT}/trunk/"
 
-if [[ -e "${SVN_ROOT}/trunk/.svnignore" ]]; then
-    echo "Setting ignore files.."
-    svn propset -R svn:ignore -F "${SVN_ROOT}/trunk/.svnignore" "${SVN_ROOT}"
+cd "${SVN_ROOT}/trunk"
+
+if [[ -e ".svnignore" ]]; then
+    echo "doing svn propset and setting ignore files.."
+    svn propset -R svn:ignore -F .svnignore .
 fi
 
-echo "Commiting to svn.."
 cd "${SVN_ROOT}"
-echo "Run svn add"
 
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 echo "Run svn del"
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
-ls -la "${SVN_ROOT}"
-svn stat
+svn cp -q trunk "tags/${TRAVIS_TAG}"
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." \
---username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache 2 >
+--username $SVN_USER --password $SVN_PASS --non-interactive --no-auth-cache 2>/dev/null
 echo "svn commiting finished."
 
 exit 0
