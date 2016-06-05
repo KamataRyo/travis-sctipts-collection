@@ -103,9 +103,11 @@ cd ..
 mv "$RELEASE_DIR"/* ./trunk
 
 cd ./trunk
-mv "$(find . -type f | grep -e"screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
-mv "$(find . -type f | grep -e"banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
-
+echo 1
+mv "$(find . -type f | grep -e "screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
+echo 2
+mv "$(find . -type f | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
+echo 3
 ls -la
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
