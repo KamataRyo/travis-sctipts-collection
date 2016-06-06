@@ -109,10 +109,9 @@ find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-
 ## create tag
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "existing 'tags/${TRAVIS_TAG}' is overwriting.."
-    rm -r "./tags/${TRAVIS_TAG}"
+    find "./tags/${TRAVIS_TAG}" -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
 fi
 echo "creating 'tags/${TRAVIS_TAG}'.."
-mkdir "./tags/${TRAVIS_TAG}"
 cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 
 # if [[ -e "./.svnignore" ]]; then
