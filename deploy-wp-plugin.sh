@@ -81,14 +81,14 @@ echo "preparing svn repo.."
 ## realy delete unnesessary files.
 ## TODO: need to be use `svn propset`.
 #@ This way to remove ignoring file do not accept * or !.
-# if [[ -e "./.svnignore" ]]; then
-#     while read line
-#     do
-#         if [[ -e $line ]]; then
-#             rm -r "$line"
-#         fi
-#     done <.svnignore
-# fi
+if [[ -e "./.svnignore" ]]; then
+    while read line
+    do
+        if [[ -e $line ]]; then
+            rm -r "$line"
+        fi
+    done <.svnignore
+fi
 
 ## use temp dir for svn
 cd "$(mktemp -d)"
@@ -115,13 +115,15 @@ echo "creating 'tags/${TRAVIS_TAG}'.."
 mkdir "./tags/${TRAVIS_TAG}"
 cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 
-if [[ -e "./.svnignore" ]]; then
-    svn propset svn:ignore -F ./.svnignore .
-fi
+# if [[ -e "./.svnignore" ]]; then
+#     svn propset svn:ignore -F ./.svnignore .
+# fi
 
 ## svn staging
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
+
+svn st
 
 # svn commit
 echo 'svn committing..'
