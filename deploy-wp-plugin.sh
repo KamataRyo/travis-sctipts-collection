@@ -92,6 +92,7 @@ cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
+svn st
 
 echo 'removing old files..'
 cd ./trunk
@@ -100,12 +101,18 @@ cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
+svn st
+
 cp -r "$RELEASE_DIR"/* ./trunk
+
+svn st
 
 cd ./trunk
 find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
 find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
 cd ..
+
+svn st
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
@@ -117,6 +124,7 @@ fi
 
 echo 'svn committing..'
 
+svn st
 svn add --force .
 svn st
 
