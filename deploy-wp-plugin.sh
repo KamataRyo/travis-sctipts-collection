@@ -122,8 +122,6 @@ cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
-svn st
-
 # svn commit
 echo 'svn committing..'
 svn ci --quiet -m "Deploy from travis. Original commit is $TRAVIS_COMMIT." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
