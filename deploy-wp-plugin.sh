@@ -92,35 +92,30 @@ cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
-echo 'removing old files..'
-svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
+find ./assets -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
+find ./trunk -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
 cp -r "$RELEASE_DIR"/* ./trunk
-svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
-echo 2
-svn st
+find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
+find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
 
-cd ./trunk
-find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
-find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
-cd ..
 
-echo 3
-svn st
+
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
-    echo "'tags/${TRAVIS_TAG}' already exists."
-else
-    echo 'making tag..'
-    mkdir "./tags/${TRAVIS_TAG}"
-    cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
+    echo "existing 'tags/${TRAVIS_TAG}' is overwriting.."
+    rm -r ./tags/${TRAVIS_TAG}
 fi
 
-echo 'svn committing..'
+echo 'making tag..'
+mkdir "./tags/${TRAVIS_TAG}"
+cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 
-svn st
-svn add --force .
-svn st
+svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
+svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
+
+
+echo 'svn committing..'
 
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
 echo "svn commiting finished."
