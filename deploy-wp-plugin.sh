@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# [name] Deploy WP Plugin
-# [description] Deploy a WordPress Plugin to Github and svn Plugin from Travis CI
-
+# [description] Deploy a WordPress Plugin to both Github and svn from Travis CI
 # [Environmental Variables]
 # WP_VERSION_TO_DEPLOY
 # PHP_VERSION_TO_DEPLOY
@@ -80,7 +78,7 @@ rm -rf .git
 echo "preparing svn repo.."
 ## realy delete unnesessary files.
 ## TODO: need to be use `svn propset`.
-#@ This way to remove ignoring file do not accept * or !.
+## This way don't accept * and ! syntax.
 if [[ -e "./.svnignore" ]]; then
     while read line
     do
@@ -120,7 +118,7 @@ cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 #     svn propset svn:ignore -F ./.svnignore .
 # fi
 
-## svn staging
+## putting svn versioning
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
