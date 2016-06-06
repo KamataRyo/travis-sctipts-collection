@@ -117,6 +117,7 @@ fi
 
 echo 'svn committing..'
 
+svn add -f .
 svn st
 
 svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
