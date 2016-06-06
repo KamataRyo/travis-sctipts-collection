@@ -92,20 +92,10 @@ cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
-echo 0
-svn st
-
 echo 'removing old files..'
-cd ./trunk
-ls . | grep -v -E "^.svn$" | xargs rm -r
-cd ../assets
-ls . | grep -v -E "^.svn$" | xargs rm -r
-cd ..
-
-echo 1
-svn st
-
+svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 cp -r "$RELEASE_DIR"/* ./trunk
+svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
 echo 2
 svn st
