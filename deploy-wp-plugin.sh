@@ -35,15 +35,15 @@ elif ! [[ "master" == "$TRAVIS_BRANCH" ]]; then
     fi
 fi
 
-# store commit message for later process
+# store values for later process
 COMMIT_MESSAGE=$(git log --format=%B -n 1 "$TRAVIS_COMMIT")
+RELEASE_DIR=$(pwd)
 
-# rebuild and format repo for release
+# format the repository for release
 rm -rf .git
 if [[ -e ".svnignore" ]]; then
     cat .svnignore > .gitignore
 fi
-
 git init
 git config user.name "kamataryo"
 git config user.email "kamataryo@travis-ci.org"
@@ -75,9 +75,9 @@ if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
 fi
 
 
-#svn release
+# prepare repo for svn
 echo "preparing svn repo.."
-
+## realy delete unnesessary files.
 if [[ -e "./.svnignore" ]]; then
     while read line
     do
@@ -86,38 +86,43 @@ if [[ -e "./.svnignore" ]]; then
         fi
     done <.svnignore
 fi
-RELEASE_DIR=$(pwd)
 
+## use temp dir for svn
 cd "$(mktemp -d)"
-svn co --quiet "${SVN_REF}"
-cd "$(basename $SVN_REF)"
+svn co --quiet "$SVN_REF"
+cd "$(basename "$SVN_REF")"
 
+## remove files at first
 find ./assets -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
 find ./trunk -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
+
+## obtain from the git repository used
 cp -r "$RELEASE_DIR"/* ./trunk
 
+## move the assets
 find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
 find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
 
-
-
-
+## create tag
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "existing 'tags/${TRAVIS_TAG}' is overwriting.."
-    rm -r ./tags/${TRAVIS_TAG}
+    rm -r "./tags/${TRAVIS_TAG}"
 fi
-
-echo 'making tag..'
+echo "creating 'tags/${TRAVIS_TAG}'.."
 mkdir "./tags/${TRAVIS_TAG}"
 cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 
+## svn staging
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 
-
+# svn commit
 echo 'svn committing..'
-
-svn ci --quiet -m "Deploy from travis. Original commit is ${TRAVIS_COMMIT}." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
+svn ci --quiet -m "Deploy from travis. Original commit is $TRAVIS_COMMIT." --username "$SVN_USER" --password "$SVN_PASS" --non-interactive > /dev/null 2>&1
 echo "svn commiting finished."
+
+# make sure that sensitive values are aborted
+unset GH_TOKEN
+unset SVN_PASS
 
 exit 0
