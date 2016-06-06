@@ -94,24 +94,25 @@ cd "$(basename $SVN_REF)"
 
 
 echo 'removing old files..'
-cd trunk
+cd ./trunk
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
-mv "$RELEASE_DIR"/* ./trunk
+cp -r "$RELEASE_DIR"/* ./trunk
 
 cd ./trunk
-mv "$(find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg].")" ../assets
-mv "$(find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg].")" ../assets
+find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
+find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
 cd ..
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "'tags/${TRAVIS_TAG}' already exists."
 else
     echo 'making tag..'
-    cp ./trunk "./tags/${TRAVIS_TAG}"
+    mkdir "./tags/${TRAVIS_TAG}"
+    cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 fi
 
 echo 'svn committing..'
