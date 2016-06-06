@@ -92,6 +92,7 @@ cd "$(mktemp -d)"
 svn co --quiet "${SVN_REF}"
 cd "$(basename $SVN_REF)"
 
+echo 0
 svn st
 
 echo 'removing old files..'
@@ -101,10 +102,12 @@ cd ../assets
 ls . | grep -v -E "^.svn$" | xargs rm -r
 cd ..
 
+echo 1
 svn st
 
 cp -r "$RELEASE_DIR"/* ./trunk
 
+echo 2
 svn st
 
 cd ./trunk
@@ -112,6 +115,7 @@ find . -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9]
 find . -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ../assets
 cd ..
 
+echo 3
 svn st
 
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
