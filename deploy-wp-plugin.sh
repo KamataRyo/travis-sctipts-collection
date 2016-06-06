@@ -74,18 +74,21 @@ if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
     exit 0
 fi
 
+rm -rf .git
 
 # prepare repo for svn
 echo "preparing svn repo.."
 ## realy delete unnesessary files.
-if [[ -e "./.svnignore" ]]; then
-    while read line
-    do
-        if [[ -e $line ]]; then
-            rm -r "$line"
-        fi
-    done <.svnignore
-fi
+## TODO: need to be use `svn propset`.
+#@ This way to remove ignoring file do not accept * or !.
+# if [[ -e "./.svnignore" ]]; then
+#     while read line
+#     do
+#         if [[ -e $line ]]; then
+#             rm -r "$line"
+#         fi
+#     done <.svnignore
+# fi
 
 ## use temp dir for svn
 cd "$(mktemp -d)"
@@ -111,6 +114,10 @@ fi
 echo "creating 'tags/${TRAVIS_TAG}'.."
 mkdir "./tags/${TRAVIS_TAG}"
 cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
+
+if [[ -e "./.svnignore" ]]; then
+    svn propset svn:ignore -F ./.svnignore .
+fi
 
 ## svn staging
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
