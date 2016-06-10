@@ -42,6 +42,12 @@ rm -rf .git
 if [[ -e ".svnignore" ]]; then
     cat .svnignore > .gitignore
 fi
+
+# prevent loop
+if [[ -e ".travis.yml" ]]; then
+    rm .travis.yml
+fi
+
 git init
 git config user.name "kamataryo"
 git config user.email "kamataryo@travis-ci.org"
