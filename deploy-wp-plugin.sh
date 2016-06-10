@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# [name] Deploy WP Plugin
-# [description] Deploy a WordPress Plugin to Github and svn Plugin from Travis CI
-
+# [description] Deploy a WordPress Plugin to both Github and svn from Travis CI
 # [Environmental Variables]
 # WP_VERSION_TO_DEPLOY
 # PHP_VERSION_TO_DEPLOY
@@ -79,8 +77,8 @@ rm -rf .git
 # prepare repo for svn
 echo "preparing svn repo.."
 ## realy delete unnesessary files.
-## TODO: need to be use `svn propset`.
-#@ This way to remove ignoring file do not accept * or !.
+## TODO: need to use `svn propset`.
+## This way don't accept * and ! syntax.
 if [[ -e "./.svnignore" ]]; then
     while read line
     do
@@ -90,23 +88,23 @@ if [[ -e "./.svnignore" ]]; then
     done <.svnignore
 fi
 
-## use temp dir for svn
+## prepare temp directory for svn
 cd "$(mktemp -d)"
 svn co --quiet "$SVN_REF"
 cd "$(basename "$SVN_REF")"
 
-## remove files at first
+## remove all files at first
 find ./assets -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
 find ./trunk -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
 
-## obtain from the git repository used
+## get files from the git repository used
 cp -r "$RELEASE_DIR"/* ./trunk
 
-## move the assets
+## move the assets(screenshots and banar images)
 find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "screenshot-[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
 find ./trunk -type d -name '.svn' -prune -o -type f -print | grep -e "banner-[1-9][0-9]*x[1-9][0-9]*\.[png|jpg]." | xargs -I% mv % ./assets
 
-## create tag
+## create tag for svn
 if [[ -e "./tags/${TRAVIS_TAG}" ]]; then
     echo "existing 'tags/${TRAVIS_TAG}' is overwriting.."
     find "./tags/${TRAVIS_TAG}" -type d -name '.svn' -prune -o -type f -print | xargs -I% rm -r %
@@ -120,7 +118,7 @@ cp -r "$RELEASE_DIR"/* "./tags/${TRAVIS_TAG}"
 #     svn propset svn:ignore -F ./.svnignore .
 # fi
 
-## svn staging
+## putting svn versioning
 svn st | grep '^!' | sed -e 's/\![ ]*/svn del -q /g' | sh
 svn st | grep '^?' | sed -e 's/\?[ ]*/svn add -q /g' | sh
 

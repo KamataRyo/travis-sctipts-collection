@@ -3,7 +3,7 @@
 # [name] Travis Encrypt WP
 # [description] Encrypt GH_TOKEN, SVN_USER, SVN_PASS at once
 # [usage] travis-encrypt-wp {GH_TOKEN} {SVN_USER}
-# [dependency] Run on Mac. It uses keychain to find
+# [dependency] Run on Mac. It uses keychain to find the password.
 
 
 service="<https://plugins.svn.wordpress.org:443> Use your WordPress.org login"
