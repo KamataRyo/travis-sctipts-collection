@@ -11,7 +11,7 @@
 set -e
 
 # filter whether deploy or not
-if ! [[ "$TRAVIS_NODE_VERSION" == "$PHP_VERSION_TO_DEPLOY" ]]; then
+if ! [[ "$TRAVIS_NODE_VERSION" == "$NODE_VERSION_TO_DEPLOY" ]]; then
     echo "Not deploying from this matrix.";
     exit 0
 elif [[ "false" != "$TRAVIS_PULL_REQUEST" ]]; then
