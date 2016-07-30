@@ -37,11 +37,11 @@ git config user.email "kamataryo@travis-ci.org"
 git add .
 git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
 
-# github release on 'latest' branch
+# github release on 'gh-pages' branch
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
-    echo "enforcing pushing to 'latest'.."
+    echo "enforcing pushing to 'gh-pages'.."
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
-    echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
+    echo "deployed on 'gh-pages' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 fi
 
 if [[  "" == "$TRAVIS_TAG" ]]; then
