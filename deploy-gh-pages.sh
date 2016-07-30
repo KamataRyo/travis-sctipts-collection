@@ -41,7 +41,7 @@ git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMI
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
     echo "enforcing pushing to 'gh-pages'.."
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
-    echo "deployed on 'gh-pages' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
+    echo "deployed on 'gh-pages' branch"
 fi
 
 if [[  "" == "$TRAVIS_TAG" ]]; then
