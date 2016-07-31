@@ -22,8 +22,8 @@ fi
 
 # format the repository for release
 rm -rf .git
-if [[ -e ".deployignore" ]]; then
-    cat .deployignore > .gitignore
+if [[ -e ".ghpageignore" ]]; then
+    cat .ghpageignore > .gitignore
 fi
 
 # prevent loop
