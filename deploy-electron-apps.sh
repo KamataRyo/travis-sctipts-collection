@@ -39,6 +39,18 @@ done
 mv $BUILD_PATH/* ./
 rmdir "$BUILD_PATH"
 
+# rename them
+ls -a | while read -r line; do
+  if [[ "." != "$line" && ".." != "$line" ]]; then
+    if [[ "" == "$TRAVIS_TAG" ]]; then
+      mv $line "latest-$line"
+    else
+      mv $line "$TRAVIS_TAG-$line"
+    fi
+  fi
+done
+
+
 echo "build results are below"
 ls -la
 
@@ -62,13 +74,6 @@ fi
 
 # github tagged release.
 echo "Making new tag with compiled files..."
-
-# rename them
-ls -a | while read -r line; do
-  if [[ "." != "$line" && ".." != "$line" ]]; then
-    mv $line "$TRAVIS_TAG-$line"
-  fi
-done
 
 git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
 echo "Pushing new tag '$TRAVIS_TAG'..."
