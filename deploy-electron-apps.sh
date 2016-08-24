@@ -50,8 +50,7 @@ git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMI
 # github release on 'latest' branch
 if [[ "master" == "$TRAVIS_BRANCH" ]]; then
     echo "enforcing pushing to 'latest'.."
-    git push --force "https://${GH_TOKEN}@${GH_REF}" master:latest
-    # git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
+    git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
     echo "deployed on 'latest' branch, which is tested on NODE=$TRAVIS_NODE_VERSION"
 fi
 
