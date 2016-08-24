@@ -62,7 +62,7 @@ fi
 
 
 # deploy WebView
-cd "$WEBVIEW_PATH"
+cd "../$WEBVIEW_PATH"
 
 git init
 git config user.name "kamataryo"
