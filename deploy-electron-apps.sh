@@ -30,8 +30,8 @@ fi
 COMMIT_MESSAGE=$(git log --format=%B -n 1 "$TRAVIS_COMMIT")
 
 # format the repository for release
-ls | while read -r line; do
-  if [[ "build" != "$line" ]]; then
+ls -a | while read -r line; do
+  if [[ "build" != "$line" && "." != "$line" && ".." != "$line" ]]; then
     rm -rf $line
   fi
 done
@@ -39,7 +39,7 @@ mv build/* ./
 rmdir build
 
 echo "build results are below"
-ls
+ls -la
 
 git init
 git config user.name "kamataryo"
