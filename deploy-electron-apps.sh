@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 # [description] Deploy an Electron desktop application to Github from Travis CI
-# [Environmental Variables]
+# [Environmental Variables required]
 # NODE_VERSION_TO_DEPLOY
+# BUILD_PATH
 # GH_REF
 # GH_TOKEN
 
@@ -31,12 +32,12 @@ COMMIT_MESSAGE=$(git log --format=%B -n 1 "$TRAVIS_COMMIT")
 
 # format the repository for release
 ls -a | while read -r line; do
-  if [[ "build" != "$line" && "." != "$line" && ".." != "$line" ]]; then
+  if [[ "$BUILD_PATH" != "$line" && "." != "$line" && ".." != "$line" ]]; then
     rm -rf $line
   fi
 done
-mv build/* ./
-rmdir build
+mv "$BUILD_PATH/*" ./
+rmdir "$BUILD_PATH"
 
 echo "build results are below"
 ls -la
