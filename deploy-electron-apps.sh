@@ -28,18 +28,18 @@ fi
 
 # store values for later process
 COMMIT_MESSAGE=$(git log --format=%B -n 1 "$TRAVIS_COMMIT")
-RELEASE_DIR=$(pwd)
 
 # format the repository for release
-rm -rf .git
-if [[ -e ".distignore" ]]; then
-    cat .distignore > .gitignore
-fi
+ls | while read -r line; do
+  if [[ "build" != "$line" ]]; then
+    rm -rf $line
+  fi
+done
+mv build/* ./
+rmdir build
 
-# prevent loop
-if [[ -e ".travis.yml" ]]; then
-    rm .travis.yml
-fi
+echo "build results are below"
+ls
 
 git init
 git config user.name "kamataryo"
