@@ -36,7 +36,7 @@ ls -a | while read -r line; do
     rm -rf $line
   fi
 done
-mv "$BUILD_PATH/*" ./
+mv $BUILD_PATH/* ./
 rmdir "$BUILD_PATH"
 
 echo "build results are below"
