@@ -4,6 +4,7 @@
 # [Environmental Variables required]
 # NODE_VERSION_TO_DEPLOY
 # BUILD_PATH
+# WEBVIEW_PATH
 # GH_REF
 # GH_TOKEN
 
@@ -30,15 +31,8 @@ fi
 # store values for later process
 COMMIT_MESSAGE=$(git log --format=%B -n 1 "$TRAVIS_COMMIT")
 
-# format the repository for release
-ls -a | while read -r line; do
-  if [[ "$BUILD_PATH" != "$line" && "." != "$line" && ".." != "$line" ]]; then
-    rm -rf $line
-  fi
-done
-mv $BUILD_PATH/* ./
-rmdir "$BUILD_PATH"
-
+# deploy distribution
+cd "$BUILD_PATH"
 # rename them
 ls -a | while read -r line; do
   if [[ "." != "$line" && ".." != "$line" ]]; then
@@ -49,7 +43,6 @@ ls -a | while read -r line; do
     fi
   fi
 done
-
 
 echo "build results are below"
 ls -la
@@ -66,6 +59,24 @@ if [[ "master" == "$TRAVIS_BRANCH" ]]; then
     git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:latest > /dev/null 2>&1
     echo "deployed on 'latest' branch, which is tested on NODE=$TRAVIS_NODE_VERSION"
 fi
+
+
+# deploy WebView
+cd "$WEBVIEW_PATH"
+
+git init
+git config user.name "kamataryo"
+git config user.email "kamataryo@travis-ci.org"
+git add .
+git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
+
+# github release on 'gh-pages' branch
+if [[ "master" == "$TRAVIS_BRANCH" ]]; then
+    echo "enforcing pushing to 'gh-pages'.."
+    git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+    echo "deployed on 'gh-pages' branch, which is tested on NODE=$TRAVIS_NODE_VERSION"
+fi
+
 
 if [[  "" == "$TRAVIS_TAG" ]]; then
     echo "Not releasing without tag."
