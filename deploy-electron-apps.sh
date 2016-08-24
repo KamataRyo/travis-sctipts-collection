@@ -62,6 +62,14 @@ fi
 
 # github tagged release.
 echo "Making new tag with compiled files..."
+
+# rename them
+ls -a | while read -r line; do
+  if [[ "." != "$line" && ".." != "$line" ]]; then
+    mv $line "$TRAVIS_TAG-$line"
+  fi
+done
+
 git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
 echo "Pushing new tag '$TRAVIS_TAG'..."
 git push --force --quiet --tag "https://${GH_TOKEN}@${GH_REF}" > /dev/null 2>&1
