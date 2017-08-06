@@ -50,6 +50,7 @@ fi
 git init
 git config user.name "kamataryo"
 git config user.email "kamataryo@travis-ci.org"
+git remote add origin git@github.com:$GH_REF.git
 git checkout -b latest
 git add .
 git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
