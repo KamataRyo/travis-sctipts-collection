@@ -47,20 +47,20 @@ if [[ -e ".travis.yml" ]]; then
     rm .travis.yml
 fi
 
-git init
-git config user.name "kamataryo"
-git config user.email "kamataryo@travis-ci.org"
-git remote add origin git@github.com:$GH_REF.git
-git checkout -b latest
-git add .
-git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
+# git init
+# git config user.name "kamataryo"
+# git config user.email "kamataryo@travis-ci.org"
+# git remote add origin git@github.com:$GH_REF.git
+# git checkout -b latest
+# git add .
+# git commit --quiet -m "Deploy from travis." -m "Original commit is $TRAVIS_COMMIT."
 
-# github release on 'latest' branch
-if [[ "master" == "$TRAVIS_BRANCH" ]]; then
-    echo "enforcing pushing to 'latest'.."
-    git push --force origin latest
-    echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
-fi
+# # github release on 'latest' branch
+# if [[ "master" == "$TRAVIS_BRANCH" ]]; then
+#     echo "enforcing pushing to 'latest'.."
+#     git push --force origin latest
+#     echo "deployed on 'latest' branch, which is tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
+# fi
 
 if [[  "" == "$TRAVIS_TAG" ]]; then
     echo "Not releasing without tag."
@@ -68,11 +68,11 @@ if [[  "" == "$TRAVIS_TAG" ]]; then
 fi
 
 # github tagged release.
-echo "Making new tag with compiled files..."
-git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
-echo "Pushing new tag '$TRAVIS_TAG'..."
-git push --force origin "$TRAVIS_TAG"
-echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
+# echo "Making new tag with compiled files..."
+# git tag "$TRAVIS_TAG" -m "$COMMIT_MESSAGE" -m "Original commit is $TRAVIS_COMMIT."
+# echo "Pushing new tag '$TRAVIS_TAG'..."
+# git push --force origin "$TRAVIS_TAG"
+# echo "deployed as '$TRAVIS_TAG', tested on PHP=$TRAVIS_PHP_VERSION & WP=$WP_VERSION"
 
 if [[ ("" == "$SVN_USER") || ("" == "$SVN_PASS") ]]; then
     echo "not committing to svn."
